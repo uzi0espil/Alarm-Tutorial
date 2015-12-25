@@ -20,10 +20,10 @@ public class AppController extends Application {
     public void onCreate() {
         super.onCreate();
 
-        PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.settings, false);
+        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
         sp = PreferenceManager.getDefaultSharedPreferences(this);
 
-        dbHelper = new DBHelper(getApplicationContext());
+        dbHelper = new DBHelper(this);
         db = dbHelper.getWritableDatabase();
     }
 }

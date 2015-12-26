@@ -95,8 +95,8 @@ public class Alarm extends AbstractModel {
                 == 1 ? true : false;
     }
 
-    @Override
-    boolean load(SQLiteDatabase db) {
+
+    public boolean load(SQLiteDatabase db) {
         Cursor cursor = db.query(TABLE_NAME, null, COL_ID + " = ?", new String[]{String.valueOf(id)}, null, null, null);
         try{
             if(cursor.moveToFirst()){

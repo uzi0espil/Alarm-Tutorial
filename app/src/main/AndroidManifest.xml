@@ -26,6 +26,10 @@
         <activity android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"
             android:label="@string/settings_activity"/>
+
+        <service android:name=".Services.AlarmService"/>
+
+        <receiver android:name=".Receiver.AlarmReceiver"/>
     </application>
 
 </manifest>

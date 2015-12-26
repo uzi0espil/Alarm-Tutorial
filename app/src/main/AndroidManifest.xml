@@ -30,6 +30,12 @@
         <service android:name=".Services.AlarmService"/>
 
         <receiver android:name=".Receiver.AlarmReceiver"/>
+
+        <receiver android:name=".Receiver.AlarmBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

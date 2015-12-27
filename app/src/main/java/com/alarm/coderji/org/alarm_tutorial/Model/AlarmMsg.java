@@ -3,6 +3,7 @@ package com.alarm.coderji.org.alarm_tutorial.Model;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.alarm.coderji.org.alarm_tutorial.Utilities.Util;
 
@@ -96,6 +97,7 @@ public class AlarmMsg extends AbstractModel {
         selection += (args!=null && args.length>1 && args[1]!=null) ? " AND "+COL_DATETIME+" >= "+args[1] : "";
         selection += (args!=null && args.length>2 && args[2]!=null) ? " AND "+COL_DATETIME+" <= "+args[2] : "";
         selection += (args!=null && args.length>3 && args[3]!=null) ? " AND "+COL_STATUS+" = '"+args[3]+"'" : "";
+        Log.d("Alarm Msg list", selection);
         String orderBy = (args!=null && args.length>4) ? args[4] : COL_DATETIME+" DESC";
 
         return db.query(TABLE_NAME, columns, selection, null, null, null, orderBy);

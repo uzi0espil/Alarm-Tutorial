@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.alarm.coderji.org.alarm_tutorial.AppController;
 import com.alarm.coderji.org.alarm_tutorial.Model.Alarm;
@@ -37,6 +38,7 @@ public class AlarmService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d("SERVICE","Service has been started");
         String action = intent.getAction();
         String alarmId = intent.getStringExtra(AlarmMsg.COL_ALARMID);
         String alarmMsgId = intent.getStringExtra(AlarmMsg.COL_ID);
@@ -44,12 +46,14 @@ public class AlarmService extends IntentService {
         String endTime = intent.getStringExtra(Alarm.COL_TODATE);
 
         if(matcher.matchAction(action)){
+            Log.d("MATCHER","Service has been started");
             if(POPULATE.equals(action)){
                 AppController.dbHelper.populate(Long.parseLong(alarmId), AppController.db);
                 execute(CREATE, alarmId);
             }
 
             if (CREATE.equals(action)) {
+                Log.d("CREATE","Service has been started");
                 execute(CREATE, alarmId, alarmMsgId, startTime, endTime);
             }
 
@@ -74,11 +78,14 @@ public class AlarmService extends IntentService {
         String status = CANCEL.equals(action) ? AlarmMsg.CANCELLED : AlarmMsg.ACTIVE;
 
         if (alarmMsgId != null)
-            c = AppController.db.query(AlarmMsg.TABLE_NAME, null, AlarmMsg.COL_ID + " = ?", new String[]{alarmMsgId}, null, null, null); // should be moved to class AlarmMsg;
+            c = AppController.db.query(AlarmMsg.TABLE_NAME, null, AlarmMsg.COL_ID+" = ?", new String[]{alarmMsgId}, null, null, null); // should be moved to class AlarmMsg;
         else
             c = AlarmMsg.list(AppController.db, alarmId, startTime, endTime, status);
 
+
+        Log.d("Service cound C","" + c.getCount());
         if(c.moveToFirst()){
+            Log.d("within C","lets see");
             long now = System.currentTimeMillis();
             long time, diff;
 
@@ -91,9 +98,12 @@ public class AlarmService extends IntentService {
 
                 time = c.getLong(c.getColumnIndex(AlarmMsg.COL_DATETIME));
                 diff = time - now + (long) Util.MIN;
+                Log.d("diff", "" + diff);
                 if(CREATE.equals(action)){
-                    if (diff > 0 && diff < Util.YEAR)
+                    if (diff > 0 && diff < Util.YEAR) {
+                        Log.d("I am here", "Here I am");
                         am.set(AlarmManager.RTC_WAKEUP, time, pi);
+                    }
                 } else if(CANCEL.equals(action)){
                     am.cancel(pi);
                 }

@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="bkg">#587058</color>
+    <color name="activ">#5c755e</color>
+    <color name="inactiv">#999999</color>
+    <color name="bkg2">#3d4935</color>
 </resources>

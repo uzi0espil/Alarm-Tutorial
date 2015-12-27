@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.alarm.coderji.org.alarm_tutorial.Utilities.AlarmUtils;
 import com.alarm.coderji.org.alarm_tutorial.Utilities.Util;
@@ -62,6 +63,7 @@ public class DBHelper extends SQLiteOpenHelper{
         String[] selectionArgs = {String.valueOf(alarmId)};
 
         Cursor c = db.rawQuery(populateSQL, selectionArgs);
+        Log.d("Count of populate", ""+c.getCount());
         if(c.moveToFirst()){
             Calendar cal = Calendar.getInstance();
             AlarmMsg alarmMsg = new AlarmMsg();
@@ -69,6 +71,7 @@ public class DBHelper extends SQLiteOpenHelper{
             db.beginTransaction();
             try{
                 do {
+                    Log.d("Alarm TO DATE", ""+c.getColumnIndex(Alarm.COL_TODATE));
                     Date fromDate = sdf.parse(c.getString(0)); //yyyy-M-d
                     cal.setTime(fromDate);
 
@@ -86,7 +89,7 @@ public class DBHelper extends SQLiteOpenHelper{
                         alarmMsg.reset();
                         alarmMsg.setAlarmId(alarmId);
                         alarmMsg.setDatetime(cal.getTimeInMillis());
-                        if(alarmMsg.getDatetime() > now - Util.MIN)
+                        if(alarmMsg.getDatetime() < now - Util.MIN)
                             alarmMsg.setStatus(AlarmMsg.EXPIRED);
                         alarmMsg.save(db);
                     }
@@ -118,30 +121,30 @@ public class DBHelper extends SQLiteOpenHelper{
                                 nextDate(cal, interval);
                             }
                         }
-                    }
 
-                    Date toDate = sdf.parse(c.getString(1));
-                    Calendar toCal = Calendar.getInstance();
-                    toCal.setTime(toDate);
-                    toCal.set(Calendar.HOUR_OF_DAY, 0);
-                    toCal.set(Calendar.MINUTE, 0);
-                    toCal.set(Calendar.SECOND, 0);
-                    toCal.set(Calendar.DATE, toCal.get(Calendar.DATE) + 1);
-                    while(cal.getTime().before(toCal.getTime())){
-                        alarmMsg.reset();
-                        alarmMsg.setAlarmId(alarmId);
-                        alarmMsg.setDatetime(cal.getTimeInMillis());
-                        if (alarmMsg.getDatetime() < now-Util.MIN)
-                            alarmMsg.setStatus(AlarmMsg.EXPIRED);
-                        alarmMsg.save(db);
-                        nextDate(cal, interval);
+                        Date toDate = sdf.parse(c.getString(c.getColumnIndex(Alarm.COL_TODATE)));
+                        Calendar toCal = Calendar.getInstance();
+                        toCal.setTime(toDate);
+                        toCal.set(Calendar.HOUR_OF_DAY, 0);
+                        toCal.set(Calendar.MINUTE, 0);
+                        toCal.set(Calendar.SECOND, 0);
+                        toCal.set(Calendar.DATE, toCal.get(Calendar.DATE) + 1);
+                        while(cal.getTime().before(toCal.getTime())){
+                            alarmMsg.reset();
+                            alarmMsg.setAlarmId(alarmId);
+                            alarmMsg.setDatetime(cal.getTimeInMillis());
+                            if (alarmMsg.getDatetime() < now-Util.MIN)
+                                alarmMsg.setStatus(AlarmMsg.EXPIRED);
+                            alarmMsg.save(db);
+                            nextDate(cal, interval);
+                        }
                     }
 
                 } while(c.moveToNext());
 
                 db.setTransactionSuccessful();
             } catch (Exception e){
-                //
+                Log.e("POPULATE", e.getMessage(), e);
             } finally {
                 db.endTransaction();
             }
